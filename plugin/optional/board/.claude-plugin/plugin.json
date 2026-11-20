@@ -1,0 +1,12 @@
+{
+  "name": "bot-bridge-board",
+  "displayName": "Claude Bot Bridge: task board",
+  "version": "0.1.0",
+  "description": "Optional. Connects Claude Code to your own Claude Bot Bridge task board (a remote MCP server) as the owner, so you can hand tasks to Muse while the Mac is closed.",
+  "author": { "name": "Qualixar", "url": "https://github.com/qualixar" },
+  "homepage": "https://github.com/qualixar/claude-bot-bridge",
+  "repository": "https://github.com/qualixar/claude-bot-bridge",
+  "license": "AGPL-3.0-or-later",
+  "privacyPolicyUrl": "https://github.com/qualixar/claude-bot-bridge/blob/main/plugin/README.md#privacy",
+  "keywords": ["muse", "task-board", "mcp"]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "muse-ax-mcp",
+  "version": "0.1.0",
+  "license": "AGPL-3.0-or-later",
+  "private": true,
+  "type": "module",
+  "description": "MCP server for Claude Bot Bridge (Meta Muse desktop app via macOS Accessibility, through the muse-ax CLI)",
+  "bin": {
+    "muse-ax-mcp": "src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "build": "node build.mjs",
+    "test": "vitest run",
+    "test:e2e": "swift build --package-path ../ && vitest run test/e2e-swift.test.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "esbuild": "^0.21.5",
+    "vitest": "^2.1.0"
+  }
+}

@@ -1,0 +1,212 @@
+name: release
+
+# Tag vX.Y.Z -> universal muse-ax binary + signed manifest on the GitHub release.
+#
+# Two jobs, so the signing key never meets the build:
+#   build              read-only token, no secrets: checks the tag and that no key material is left UNSIGNED, runs the Swift and MCP
+#                      tests, builds, packages, uploads an unsigned artifact.
+#   sign-and-publish   environment `release` (required reviewers, see .github/RELEASING.md): the only job that can read
+#                      CBB_BINARY_SIGNING_KEY (an ENVIRONMENT secret, not a repository secret) and the only one with a write token,
+#                      an OIDC token and the right to attest. It signs the manifest with the BINARY key (named in keys/keyset.json),
+#                      never with the root key (that one stays offline and is not in GitHub at all), and attests the build provenance.
+# Every action is pinned by full commit SHA (the tag it was resolved from is in the comment); update them with
+# `gh api repos/<owner>/<repo>/commits/<tag> --jq .sha`.
+on:
+  push:
+    tags: ["v*"]
+
+permissions: {}
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Check the tag matches the plugin version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -eu
+          printf '%s\n' "$TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$' || { echo "tag $TAG is not vX.Y.Z"; exit 1; }
+          version=$(jq -r .version plugin/.claude-plugin/plugin.json)
+          swift_version=$(sed -n 's/.*static let version = "\(.*\)".*/\1/p' plugin/bridge/muse/Sources/MuseAXCore/Canary.swift)
+          manifest_version=$(jq -r .version plugin/bridge/muse/binary-manifest.json)
+          package_version=$(jq -r .version plugin/bridge/muse/mcp/package.json)
+          node_version=$(sed -n 's/.*PLUGIN_VERSION = "\(.*\)".*/\1/p' plugin/bridge/muse/mcp/src/version.js)
+          [ "$TAG" = "v$version" ] || { echo "tag $TAG != plugin.json version v$version"; exit 1; }
+          [ "$swift_version" = "$version" ] || { echo "BridgeInfo.version $swift_version != $version"; exit 1; }
+          [ "$manifest_version" = "$version" ] || { echo "binary-manifest.json version $manifest_version != $version"; exit 1; }
+          [ "$package_version" = "$version" ] || { echo "mcp/package.json version $package_version != $version"; exit 1; }
+          [ "$node_version" = "$version" ] || { echo "mcp/src/version.js PLUGIN_VERSION $node_version != $version"; exit 1; }
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+
+      # A release must not ship trust material that was never signed: the keyset (root key, offline) and the rules (rules key).
+      - name: No unsigned trust material
+        run: |
+          set -eu
+          for marker in keys/UNSIGNED rules/UNSIGNED; do
+            [ ! -e "$marker" ] || { echo "$marker exists: sign it first (.github/RELEASING.md)"; cat "$marker"; exit 1; }
+          done
+          [ -f keys/keyset.json.sig ] || { echo "keys/keyset.json.sig is missing"; exit 1; }
+          [ -f rules/muse.json.sig ] && [ -f rules/index.json.sig ] || { echo "rules signatures are missing"; exit 1; }
+
+      # Existence is not enough: the signatures must verify. The keyset against the root public key (which must be the one embedded in
+      # the plugin), the rules against the rules key their key_id names in that keyset. Same scripts the maintainer ran offline.
+      - name: Verify the keyset and rules signatures
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+          HOMEBREW_NO_INSTALL_CLEANUP: "1"
+        run: |
+          set -eu
+          brew list jq >/dev/null 2>&1 || brew install jq
+          brew list openssl@3 >/dev/null 2>&1 || brew install openssl@3
+          OPENSSL="$(brew --prefix openssl@3)/bin/openssl"
+          export OPENSSL
+          "$OPENSSL" version | grep -q '^OpenSSL 3' || { echo "OpenSSL 3 is required for Ed25519 -rawin"; exit 1; }
+          cmp keys/root-public.pem plugin/release-signing-public.pem || { echo "keys/root-public.pem differs from plugin/release-signing-public.pem"; exit 1; }
+          sh plugin/scripts/verify-keyset.sh keys/keyset.json keys/root-public.pem
+          for f in rules/index.json rules/muse.json; do sh plugin/scripts/verify-rules.sh "$f"; done
+
+      # Nothing is built, signed or published from a tree whose tests fail. The build job has no secrets, so these run safely here.
+      - name: Swift tests
+        run: |
+          set -eu
+          if [ -d /Library/Developer/CommandLineTools/Library/Developer/Frameworks ]; then
+            bash plugin/bridge/muse/test.sh
+          else
+            swift test --package-path plugin/bridge/muse
+          fi
+
+      - name: MCP tests (includes the bundle freshness check)
+        working-directory: plugin/bridge/muse/mcp
+        run: |
+          set -eu
+          npm ci
+          npx vitest run
+
+      - name: Build universal binary (arm64 + x86_64)
+        run: |
+          set -eu
+          swift build -c release --arch arm64 --arch x86_64 --package-path plugin/bridge/muse
+          mkdir -p dist
+          cp plugin/bridge/muse/.build/apple/Products/Release/muse-ax dist/muse-ax
+          archs=$(lipo -archs dist/muse-ax)
+          case "$archs" in *arm64*x86_64*|*x86_64*arm64*) ;; *) echo "not universal: $archs"; exit 1 ;; esac
+          codesign --force --sign - dist/muse-ax
+          codesign --verify --strict dist/muse-ax
+          [ "$(dist/muse-ax version | jq -r .version)" = "$VERSION" ] || { echo "binary reports a different version"; exit 1; }
+
+      - name: Package
+        run: |
+          set -eu
+          # COPYFILE_DISABLE keeps AppleDouble (._muse-ax) entries out of the archive; the updater accepts exactly one file.
+          COPYFILE_DISABLE=1 tar -czf dist/muse-ax-macos-universal.tar.gz -C dist muse-ax
+          [ "$(tar -tzf dist/muse-ax-macos-universal.tar.gz)" = "muse-ax" ] || { echo "archive must hold exactly muse-ax"; exit 1; }
+          sha=$(shasum -a 256 dist/muse-ax-macos-universal.tar.gz | cut -d' ' -f1)
+          jq -n --arg v "$VERSION" --arg sha "$sha" \
+            '{version: $v, url: ("https://github.com/qualixar/claude-bot-bridge/releases/download/v" + $v + "/muse-ax-macos-universal.tar.gz"), sha256: $sha, signature: ""}' \
+            > dist/binary-manifest.json
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: unsigned-release
+          path: |
+            dist/muse-ax-macos-universal.tar.gz
+            dist/binary-manifest.json
+          if-no-files-found: error
+          retention-days: 7
+
+  sign-and-publish:
+    needs: build
+    runs-on: macos-15
+    timeout-minutes: 15
+    # Required reviewers + the signing key live on this environment; the job waits for approval before it starts.
+    environment: release
+    # The only job with write access, an OIDC token (id-token) and the right to store attestations.
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: unsigned-release
+          path: dist
+
+      - name: Install the signing tools (jq, OpenSSL 3)
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+          HOMEBREW_NO_INSTALL_CLEANUP: "1"
+        run: |
+          set -eu
+          brew list jq >/dev/null 2>&1 || brew install jq
+          brew list openssl@3 >/dev/null 2>&1 || brew install openssl@3
+          tools="$RUNNER_TEMP/tools/bin"
+          mkdir -p "$tools"
+          ln -sf "$(brew --prefix jq)/bin/jq" "$tools/jq"
+          ln -sf "$(brew --prefix openssl@3)/bin/openssl" "$tools/openssl"
+          "$tools/openssl" version | grep -q '^OpenSSL 3' || { echo "OpenSSL 3 is required for Ed25519 -rawin"; exit 1; }
+          "$tools/jq" --version
+          echo "TOOLS_BIN=$tools" >> "$GITHUB_ENV"
+
+      - name: Check the artifact is the one for this tag
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -eu
+          printf '%s\n' "$TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$' || { echo "tag $TAG is not vX.Y.Z"; exit 1; }
+          version="${TAG#v}"
+          [ "$(jq -r .version plugin/.claude-plugin/plugin.json)" = "$version" ] || { echo "tag $TAG != plugin.json version"; exit 1; }
+          [ "$(jq -r .version dist/binary-manifest.json)" = "$version" ] || { echo "manifest version != $version"; exit 1; }
+          [ "$(jq -r .signature dist/binary-manifest.json)" = "" ] || { echo "the artifact manifest is already signed"; exit 1; }
+          expected_url="https://github.com/qualixar/claude-bot-bridge/releases/download/$TAG/muse-ax-macos-universal.tar.gz"
+          [ "$(jq -r .url dist/binary-manifest.json)" = "$expected_url" ] || { echo "manifest url is not $expected_url"; exit 1; }
+          [ "$(jq -r .sha256 dist/binary-manifest.json)" = "$(shasum -a 256 dist/muse-ax-macos-universal.tar.gz | cut -d' ' -f1)" ] || { echo "sha256 in the manifest != the archive"; exit 1; }
+          [ "$(tar -tzf dist/muse-ax-macos-universal.tar.gz)" = "muse-ax" ] || { echo "archive must hold exactly muse-ax"; exit 1; }
+
+      # The BINARY key signs the manifest. sign-manifest.sh refuses any key that is not keys/binary-public.pem, looks its key_id up
+      # in the root-signed keys/keyset.json (so it also refuses a revoked or expired key) and writes it into the manifest.
+      - name: Sign the manifest
+        env:
+          CBB_BINARY_SIGNING_KEY: ${{ secrets.CBB_BINARY_SIGNING_KEY }}
+        run: |
+          set -eu
+          [ -n "$CBB_BINARY_SIGNING_KEY" ] || { echo "environment secret CBB_BINARY_SIGNING_KEY is not set on the release environment"; exit 1; }
+          # Only the tools installed above and the system directories; the key is read from this variable alone.
+          PATH="$TOOLS_BIN:/usr/bin:/bin:/usr/sbin:/sbin"
+          export PATH
+          OPENSSL="$TOOLS_BIN/openssl" /bin/sh plugin/scripts/sign-manifest.sh --key-env CBB_BINARY_SIGNING_KEY dist/binary-manifest.json
+          [ "$(jq -r .key_id dist/binary-manifest.json)" != "null" ] || { echo "the signed manifest has no key_id"; exit 1; }
+
+      # Build provenance (SLSA, signed through GitHub's OIDC identity): proves this archive came out of this workflow on this tag.
+      # Check it with: gh attestation verify muse-ax-macos-universal.tar.gz --repo qualixar/claude-bot-bridge
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: dist/muse-ax-macos-universal.tar.gz
+
+      - name: Upload to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -eu
+          [ "$(jq -r '.signature | length' dist/binary-manifest.json)" -gt 40 ] || { echo "manifest is not signed"; exit 1; }
+          files="dist/muse-ax-macos-universal.tar.gz dist/binary-manifest.json"
+          # shellcheck disable=SC2086
+          gh release create "$TAG" $files --repo "$GITHUB_REPOSITORY" --verify-tag --title "$TAG" --generate-notes \
+            || gh release upload "$TAG" $files --repo "$GITHUB_REPOSITORY" --clobber

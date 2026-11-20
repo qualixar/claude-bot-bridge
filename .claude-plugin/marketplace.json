@@ -1,0 +1,26 @@
+{
+  "name": "claude-bot-bridge",
+  "description": "Claude Bot Bridge by Qualixar: connect Claude Code to the Meta Muse app on your Mac.",
+  "owner": {
+    "name": "Qualixar",
+    "url": "https://github.com/qualixar"
+  },
+  "plugins": [
+    {
+      "name": "bot-bridge",
+      "source": "./plugin",
+      "description": "Direct chat with the Meta Muse app through macOS Accessibility, plus an optional task board for longer tasks.",
+      "version": "0.1.0",
+      "license": "AGPL-3.0-or-later",
+      "homepage": "https://github.com/qualixar/claude-bot-bridge"
+    },
+    {
+      "name": "bot-bridge-board",
+      "source": "./plugin/optional/board",
+      "description": "Optional: connects Claude Code to your own Claude Bot Bridge task board as owner. Needs CBB_BOARD_URL and CBB_BOARD_OWNER_KEY.",
+      "version": "0.1.0",
+      "license": "AGPL-3.0-or-later",
+      "homepage": "https://github.com/qualixar/claude-bot-bridge"
+    }
+  ]
+}

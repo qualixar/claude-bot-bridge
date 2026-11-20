@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "issued_at": "2026-11-20T00:00:00Z",
+  "not_after": "2027-11-20T00:00:00Z",
+  "keys": [
+    {
+      "id": "rules-1",
+      "use": "rules",
+      "public_key_b64": "z3Q206OM8YAA6o6IQWyVEhtxzgxxQ78u1tB/+eWKwPk=",
+      "not_after": "2028-11-20T00:00:00Z"
+    },
+    {
+      "id": "binary-1",
+      "use": "binary",
+      "public_key_b64": "7ClKibKiPCOHPsbP9kQyLfqKN/Ho2ifRg7iJCNMpvc0=",
+      "not_after": "2028-11-20T00:00:00Z"
+    }
+  ],
+  "revoked": []
+}

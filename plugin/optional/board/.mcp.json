@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "board": {
+      "type": "http",
+      "url": "${CBB_BOARD_URL}",
+      "headers": { "Authorization": "Bearer ${CBB_BOARD_OWNER_KEY}" }
+    }
+  }
+}

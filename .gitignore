@@ -1,0 +1,11 @@
+.DS_Store
+.claude/
+node_modules/
+coverage/
+.wrangler/
+.build/
+*.log
+.env
+.env.*
+!.env.example
+board/wrangler.local.jsonc

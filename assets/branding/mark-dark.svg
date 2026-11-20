@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512"><title>Claude Bot Bridge</title><rect width="512" height="512" rx="112" fill="#1B1F3B"/>
+  <g transform="translate(0 30)">
+  <path d="M74 248 L150 300 L74 352" fill="none" stroke="#F4A300" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M150 300 C 170 150, 350 120, 376 250" fill="none" stroke="#F4A300" stroke-width="36" stroke-linecap="round"/>
+  <path d="M336 258 H 418 A 32 32 0 0 1 450 290 V 338 A 32 32 0 0 1 418 370 H 410 V 398 Q 410 404 405 400 L 372 370 H 336 A 32 32 0 0 1 304 338 V 290 A 32 32 0 0 1 336 258 Z" fill="#F4A300"/>
+  <circle cx="376" cy="244" r="16" fill="#FAF7F0"/>
+  </g>
+</svg>

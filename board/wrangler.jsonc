@@ -1,0 +1,34 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "qualixar-task-board",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "observability": { "enabled": true },
+  // Plain vars. WORKER_NAME is a display name only (default "Muse"); the first release used "Musebot". Tasks
+  // claimed under the old name keep that text and keep heartbeating either way.
+  "vars": { "WORKER_RATE_LIMIT_PER_MIN": "60" /* , "WORKER_NAME": "Muse" */ },
+  // Secrets (set with `wrangler secret put NAME`, never in this file):
+  //   OWNER_KEY_SHA256, WORKER_KEY_SHA256, VIEWER_KEY_SHA256   SHA-256 hex of each key (`board keygen --role ...`).
+  //                            The legacy OWNER_TOKEN / WORKER_TOKEN keep working until you switch to hashes.
+  //   BOARD_ENCRYPTION_KEY    base64, 32 bytes (`board keygen --encryption-key`). Required: without it every
+  //                            request gets 503, unless ALLOW_PLAINTEXT_STORAGE=1 (not for production).
+  //   BOARD_ENCRYPTION_KEY_PREVIOUS   only while rotating the key.
+  //   SESSION_SECRET          32+ random characters (`board keygen --session-secret`); needed for the web board login.
+  // Failed-auth limiter (Workers rate-limiting binding: failures only, no D1 writes). The namespace_id is any
+  // integer string unique within your Cloudflare account; change it if 1001 is already used.
+  "ratelimits": [{ "name": "AUTH_FAIL_LIMITER", "namespace_id": "1001", "simple": { "limit": 20, "period": 60 } }],
+  "triggers": { "crons": ["*/15 * * * *"] },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "qualixar-task-board",
+      // Placeholder, enough for `wrangler dev --local` and the tests. For a real deployment, copy this file to
+      // wrangler.local.jsonc (git-ignored), paste the id printed by `wrangler d1 create qualixar-task-board` there,
+      // and `cbb-board upgrade --cloudflare` (or `wrangler deploy --config wrangler.local.jsonc`) will use it.
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations"
+    }
+  ]
+}

@@ -1,0 +1,260 @@
+{
+ "_about": "Shared by the Swift (SendRules) and Node (validate.js) test suites. A case has `text`, or `head` + `repeat` {s, n} + `tail`. `valid` is what both validators must answer. The limit counts Unicode scalars.",
+ "cases": [
+  {
+   "name": "plain",
+   "valid": true,
+   "text": "[Claude Code] hello"
+  },
+  {
+   "name": "no space after prefix",
+   "valid": true,
+   "text": "[Claude Code]hello"
+  },
+  {
+   "name": "nbsp then text",
+   "valid": true,
+   "text": "[Claude Code]\u00a0hello"
+  },
+  {
+   "name": "zwj emoji with visible text",
+   "valid": true,
+   "text": "[Claude Code] \ud83d\udc68\u200d\ud83d\udc69\u200d\ud83d\udc67 hi"
+  },
+  {
+   "name": "combining mark right after prefix",
+   "valid": true,
+   "text": "[Claude Code]\u0301 x"
+  },
+  {
+   "name": "smart quotes and unicode text",
+   "valid": true,
+   "text": "[Claude Code] \u201cna\u00efve\u201d \u65e5\u672c\u8a9e"
+  },
+  {
+   "name": "exactly 500 ascii scalars",
+   "valid": true,
+   "head": "[Claude Code] ",
+   "repeat": {
+    "s": "a",
+    "n": 486
+   },
+   "tail": ""
+  },
+  {
+   "name": "exactly 500 emoji scalars",
+   "valid": true,
+   "head": "[Claude Code] ",
+   "repeat": {
+    "s": "\ud83d\ude00",
+    "n": 486
+   },
+   "tail": ""
+  },
+  {
+   "name": "500 scalars but few graphemes",
+   "valid": true,
+   "head": "[Claude Code] ",
+   "repeat": {
+    "s": "\ud83d\udc68\u200d\ud83d\udc69\u200d\ud83d\udc67",
+    "n": 97
+   },
+   "tail": "a"
+  },
+  {
+   "name": "501 ascii scalars",
+   "valid": false,
+   "head": "[Claude Code] ",
+   "repeat": {
+    "s": "a",
+    "n": 487
+   },
+   "tail": ""
+  },
+  {
+   "name": "501 scalars but few graphemes",
+   "valid": false,
+   "head": "[Claude Code] ",
+   "repeat": {
+    "s": "\ud83d\udc68\u200d\ud83d\udc69\u200d\ud83d\udc67",
+    "n": 97
+   },
+   "tail": "ab"
+  },
+  {
+   "name": "501 emoji scalars",
+   "valid": false,
+   "head": "[Claude Code] ",
+   "repeat": {
+    "s": "\ud83d\ude00",
+    "n": 487
+   },
+   "tail": ""
+  },
+  {
+   "name": "empty string",
+   "valid": false,
+   "text": ""
+  },
+  {
+   "name": "missing prefix",
+   "valid": false,
+   "text": "hello"
+  },
+  {
+   "name": "prefix in the middle",
+   "valid": false,
+   "text": "hi [Claude Code] hello"
+  },
+  {
+   "name": "lowercase prefix",
+   "valid": false,
+   "text": "[claude code] hello"
+  },
+  {
+   "name": "prefix only",
+   "valid": false,
+   "text": "[Claude Code]"
+  },
+  {
+   "name": "prefix and space only",
+   "valid": false,
+   "text": "[Claude Code] "
+  },
+  {
+   "name": "prefix and many spaces",
+   "valid": false,
+   "text": "[Claude Code]     "
+  },
+  {
+   "name": "newline",
+   "valid": false,
+   "text": "[Claude Code] a\nb"
+  },
+  {
+   "name": "carriage return",
+   "valid": false,
+   "text": "[Claude Code] a\rb"
+  },
+  {
+   "name": "tab",
+   "valid": false,
+   "text": "[Claude Code] a\tb"
+  },
+  {
+   "name": "NUL",
+   "valid": false,
+   "text": "[Claude Code] a\u0000b"
+  },
+  {
+   "name": "ESC",
+   "valid": false,
+   "text": "[Claude Code] a\u001bb"
+  },
+  {
+   "name": "DEL",
+   "valid": false,
+   "text": "[Claude Code] a\u007fb"
+  },
+  {
+   "name": "NEL U+0085",
+   "valid": false,
+   "text": "[Claude Code] a\u0085b"
+  },
+  {
+   "name": "C1 control U+009B",
+   "valid": false,
+   "text": "[Claude Code] a\u009bb"
+  },
+  {
+   "name": "line separator U+2028",
+   "valid": false,
+   "text": "[Claude Code] a\u2028b"
+  },
+  {
+   "name": "paragraph separator U+2029",
+   "valid": false,
+   "text": "[Claude Code] a\u2029b"
+  },
+  {
+   "name": "bidi control LRE",
+   "valid": false,
+   "text": "[Claude Code] a\u202ab"
+  },
+  {
+   "name": "bidi control RLE",
+   "valid": false,
+   "text": "[Claude Code] a\u202bb"
+  },
+  {
+   "name": "bidi control PDF",
+   "valid": false,
+   "text": "[Claude Code] a\u202cb"
+  },
+  {
+   "name": "bidi control LRO",
+   "valid": false,
+   "text": "[Claude Code] a\u202db"
+  },
+  {
+   "name": "bidi control RLO",
+   "valid": false,
+   "text": "[Claude Code] a\u202eb"
+  },
+  {
+   "name": "bidi control LRI",
+   "valid": false,
+   "text": "[Claude Code] a\u2066b"
+  },
+  {
+   "name": "bidi control RLI",
+   "valid": false,
+   "text": "[Claude Code] a\u2067b"
+  },
+  {
+   "name": "bidi control FSI",
+   "valid": false,
+   "text": "[Claude Code] a\u2068b"
+  },
+  {
+   "name": "bidi control PDI",
+   "valid": false,
+   "text": "[Claude Code] a\u2069b"
+  },
+  {
+   "name": "bidi control LRM",
+   "valid": false,
+   "text": "[Claude Code] a\u200eb"
+  },
+  {
+   "name": "bidi control RLM",
+   "valid": false,
+   "text": "[Claude Code] a\u200fb"
+  },
+  {
+   "name": "bidi control ALM",
+   "valid": false,
+   "text": "[Claude Code] a\u061cb"
+  },
+  {
+   "name": "zero width space only body",
+   "valid": false,
+   "text": "[Claude Code] \u200b"
+  },
+  {
+   "name": "zero width mix only body",
+   "valid": false,
+   "text": "[Claude Code] \u200b\u200d\ufeff\u2060"
+  },
+  {
+   "name": "invisible and spaces only body",
+   "valid": false,
+   "text": "[Claude Code]\u2060 \u00a0\u200c"
+  },
+  {
+   "name": "soft hyphen only body",
+   "valid": false,
+   "text": "[Claude Code] \u00ad"
+  }
+ ]
+}

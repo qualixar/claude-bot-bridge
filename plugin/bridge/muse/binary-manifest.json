@@ -1,0 +1,6 @@
+{
+  "version": "0.1.0",
+  "url": "https://github.com/qualixar/claude-bot-bridge/releases/download/v0.1.0/muse-ax-macos-universal.tar.gz",
+  "sha256": "<placeholder until first release>",
+  "signature": "<base64 Ed25519 over the canonical manifest without the signature field; the release workflow fills this in>"
+}

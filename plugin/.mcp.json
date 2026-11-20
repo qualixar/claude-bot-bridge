@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "muse": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/bridge/muse/mcp/dist/index.mjs"]
+    }
+  }
+}

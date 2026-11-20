@@ -1,0 +1,21 @@
+{
+  "name": "bot-bridge",
+  "displayName": "Claude Bot Bridge",
+  "version": "0.1.0",
+  "description": "Lets Claude Code talk to the Meta Muse app on your Mac (direct chat through macOS Accessibility) and hand longer tasks to Muse through an optional task board.",
+  "author": {
+    "name": "Qualixar",
+    "url": "https://github.com/qualixar"
+  },
+  "homepage": "https://github.com/qualixar/claude-bot-bridge",
+  "repository": "https://github.com/qualixar/claude-bot-bridge",
+  "license": "AGPL-3.0-or-later",
+  "keywords": [
+    "muse",
+    "meta",
+    "macos",
+    "accessibility",
+    "mcp",
+    "agent-bridge"
+  ]
+}

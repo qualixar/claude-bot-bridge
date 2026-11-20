@@ -1,0 +1,269 @@
+{
+  "format": "cbb-ax-tree/1",
+  "muse_version": "12.1",
+  "redacted": true,
+  "source": "Built by hand from the real Muse 12.1 strings in the unit tests (Side chats group, Main chat, New side chat, composer 'Message in <chat> Attach files Send'); chat names are hashes and messages are dropped, exactly as `muse-ax doctor --dump-tree` writes them. Replace with a real doctor capture when one exists.",
+  "tree": {
+    "role": "AXApplication",
+    "frame": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+    },
+    "children": [
+      {
+        "role": "AXWindow",
+        "frame": {
+          "x": 100,
+          "y": 40,
+          "w": 1000,
+          "h": 700
+        },
+        "children": [
+          {
+            "role": "AXWebArea",
+            "frame": {
+              "x": 100,
+              "y": 70,
+              "w": 1000,
+              "h": 670
+            },
+            "children": [
+              {
+                "role": "AXGroup",
+                "frame": {
+                  "x": 100,
+                  "y": 70,
+                  "w": 220,
+                  "h": 640
+                },
+                "children": [
+                  {
+                    "role": "AXTextField",
+                    "frame": {
+                      "x": 112,
+                      "y": 84,
+                      "w": 196,
+                      "h": 28
+                    },
+                    "children": [],
+                    "title": "",
+                    "value": ""
+                  },
+                  {
+                    "role": "AXButton",
+                    "frame": {
+                      "x": 112,
+                      "y": 124,
+                      "w": 196,
+                      "h": 32
+                    },
+                    "children": [],
+                    "title": "Main chat"
+                  },
+                  {
+                    "role": "AXButton",
+                    "frame": {
+                      "x": 112,
+                      "y": 160,
+                      "w": 196,
+                      "h": 32
+                    },
+                    "children": [],
+                    "title": "h:3fa91c0e"
+                  },
+                  {
+                    "role": "AXButton",
+                    "frame": {
+                      "x": 112,
+                      "y": 196,
+                      "w": 196,
+                      "h": 32
+                    },
+                    "children": [],
+                    "title": "h:9b21d7aa"
+                  },
+                  {
+                    "role": "AXButton",
+                    "frame": {
+                      "x": 112,
+                      "y": 240,
+                      "w": 196,
+                      "h": 32
+                    },
+                    "children": [],
+                    "title": "Channels"
+                  },
+                  {
+                    "role": "AXButton",
+                    "frame": {
+                      "x": 112,
+                      "y": 276,
+                      "w": 196,
+                      "h": 32
+                    },
+                    "children": [],
+                    "title": "Search"
+                  },
+                  {
+                    "role": "AXButton",
+                    "frame": {
+                      "x": 112,
+                      "y": 620,
+                      "w": 196,
+                      "h": 32
+                    },
+                    "children": [],
+                    "title": "New side chat"
+                  }
+                ],
+                "title": "Side chats"
+              },
+              {
+                "role": "AXGroup",
+                "frame": {
+                  "x": 330,
+                  "y": 70,
+                  "w": 760,
+                  "h": 500
+                },
+                "children": [
+                  {
+                    "role": "AXGroup",
+                    "frame": {
+                      "x": 0,
+                      "y": 0,
+                      "w": 0,
+                      "h": 0
+                    },
+                    "children": [
+                      {
+                        "role": "AXStaticText",
+                        "frame": {
+                          "x": 0,
+                          "y": 0,
+                          "w": 0,
+                          "h": 0
+                        },
+                        "children": [],
+                        "title": "<message>"
+                      }
+                    ]
+                  },
+                  {
+                    "role": "AXGroup",
+                    "frame": {
+                      "x": 0,
+                      "y": 0,
+                      "w": 0,
+                      "h": 0
+                    },
+                    "children": [
+                      {
+                        "role": "AXStaticText",
+                        "frame": {
+                          "x": 0,
+                          "y": 0,
+                          "w": 0,
+                          "h": 0
+                        },
+                        "children": [],
+                        "title": "<message>"
+                      }
+                    ]
+                  },
+                  {
+                    "role": "AXGroup",
+                    "frame": {
+                      "x": 0,
+                      "y": 0,
+                      "w": 0,
+                      "h": 0
+                    },
+                    "children": [
+                      {
+                        "role": "AXStaticText",
+                        "frame": {
+                          "x": 0,
+                          "y": 0,
+                          "w": 0,
+                          "h": 0
+                        },
+                        "children": [],
+                        "title": "<message>"
+                      }
+                    ]
+                  },
+                  {
+                    "role": "AXGroup",
+                    "frame": {
+                      "x": 0,
+                      "y": 0,
+                      "w": 0,
+                      "h": 0
+                    },
+                    "children": [
+                      {
+                        "role": "AXStaticText",
+                        "frame": {
+                          "x": 0,
+                          "y": 0,
+                          "w": 0,
+                          "h": 0
+                        },
+                        "children": [],
+                        "title": "<message>"
+                      }
+                    ]
+                  }
+                ],
+                "title": "Chat messages"
+              },
+              {
+                "role": "AXButton",
+                "frame": {
+                  "x": 340,
+                  "y": 600,
+                  "w": 740,
+                  "h": 58
+                },
+                "children": [],
+                "title": "Message in h:3fa91c0e Attach files Send"
+              }
+            ],
+            "title": ""
+          }
+        ],
+        "title": "h:3fa91c0e"
+      }
+    ],
+    "title": "h:0c8e55f1"
+  },
+  "expect": {
+    "selected": {
+      "kind": "matched",
+      "profile": "muse-12.1"
+    },
+    "future_version": {
+      "kind": "probe",
+      "profile": "muse-13.1"
+    },
+    "chats": [
+      "Main chat",
+      "h:3fa91c0e",
+      "h:9b21d7aa"
+    ],
+    "current_chat": "h:3fa91c0e",
+    "profiles": {
+      "muse-12.1": {
+        "layout": "sidebar",
+        "missing": []
+      },
+      "muse-13.1": {
+        "layout": "sidebar",
+        "missing": []
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+# Example. Copy .env.example to .env, fill it in (see README), then: docker compose up -d --build
+services:
+  board:
+    build: .
+    image: claude-bot-bridge-board:local
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      # Loopback only. Put a TLS reverse proxy, Tailscale Funnel or a Cloudflare Tunnel in front for Muse.
+      - "127.0.0.1:8787:8787"
+    volumes:
+      - board-data:/data
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  board-data:

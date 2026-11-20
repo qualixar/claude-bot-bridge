@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "revision": 1,
+  "key_id": "rules-1",
+  "bots": [
+    {
+      "id": "muse",
+      "rules": "muse.json"
+    }
+  ]
+}

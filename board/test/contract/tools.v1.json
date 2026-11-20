@@ -1,0 +1,393 @@
+{
+  "api": 1,
+  "roles": {
+    "owner": [
+      {
+        "name": "list_open_tasks",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "get_task",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^T-\\d{4,6}$"
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "heartbeat",
+        "inputSchema": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "admin_rotate_encryption",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "cursor": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "limit": {
+              "default": 50,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            },
+            "verify": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "task_create",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "brief": {
+              "type": "string",
+              "minLength": 1
+            },
+            "deliverable": {
+              "type": "string",
+              "minLength": 1
+            },
+            "acceptance": {
+              "default": "",
+              "type": "string"
+            },
+            "priority": {
+              "default": 2,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3
+            },
+            "deadline": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2}(\\.\\d{1,3})?)?(Z|[+-]\\d{2}:\\d{2})$"
+            }
+          },
+          "required": [
+            "title",
+            "brief",
+            "deliverable"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "task_list",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "open",
+                "claimed",
+                "in_progress",
+                "needs_owner",
+                "done",
+                "failed",
+                "cancelled"
+              ]
+            },
+            "limit": {
+              "default": 50,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "task_get",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^T-\\d{4,6}$"
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "task_results",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^T-\\d{4,6}$"
+            },
+            "limit": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "task_wait",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^T-\\d{4,6}$"
+            },
+            "since_rev": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "timeout_s": {
+              "default": 25,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "task_answer",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^T-\\d{4,6}$"
+            },
+            "reply": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "id",
+            "reply"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "task_cancel",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^T-\\d{4,6}$"
+            },
+            "reason": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "board_pause",
+        "inputSchema": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "board_resume",
+        "inputSchema": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        }
+      }
+    ],
+    "worker": [
+      {
+        "name": "list_open_tasks",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "claim_task",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^T-\\d{4,6}$"
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "get_task",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^T-\\d{4,6}$"
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "post_progress",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^T-\\d{4,6}$"
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "id",
+            "note"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "submit_result",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^T-\\d{4,6}$"
+            },
+            "summary": {
+              "type": "string",
+              "minLength": 1
+            },
+            "links": {
+              "default": [],
+              "maxItems": 20,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 2048
+              }
+            },
+            "notes": {
+              "default": "",
+              "type": "string"
+            },
+            "outcome": {
+              "default": "done",
+              "type": "string",
+              "enum": [
+                "done",
+                "failed"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "summary"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ask_owner",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^T-\\d{4,6}$"
+            },
+            "question": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "id",
+            "question"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "heartbeat",
+        "inputSchema": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        }
+      }
+    ]
+  }
+}

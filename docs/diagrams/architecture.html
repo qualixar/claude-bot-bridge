@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>Claude Bot Bridge architecture</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=block" rel="stylesheet">
+<style>
+:root{--indigo:#1B1F3B;--saffron:#F4A300;--paper:#FAF7F0;--mute:#B9BEDC;--line:#3A4170;--card:#232850}
+*{box-sizing:border-box}
+html,body{margin:0;width:1600px;height:800px;overflow:hidden}
+body{background:radial-gradient(1200px 700px at 80% 10%,#2A3060 0%,#1B1F3B 55%,#14172C 100%);color:var(--paper);font-family:Inter,sans-serif;position:relative}
+.lane{position:absolute;left:40px;width:1520px;border:1.5px solid var(--line);border-radius:22px;background:rgba(20,23,44,.55)}
+.lane h2{position:absolute;left:30px;top:20px;margin:0;font:700 26px 'Space Grotesk',sans-serif;letter-spacing:-.01em}
+.lane h2 span{color:var(--saffron)}
+.lane .note{position:absolute;right:30px;top:26px;font-size:17px;color:var(--mute)}
+.node{position:absolute;border:2px solid var(--line);border-radius:16px;background:var(--card);padding:16px 18px;text-align:center}
+.node.hot{border-color:var(--saffron)}
+.node b{display:block;font:700 24px 'Space Grotesk',sans-serif;line-height:1.15}
+.node i{display:block;font-style:normal;font-size:16px;color:var(--mute);margin-top:7px;line-height:1.35}
+.lbl{position:absolute;font-size:16px;color:var(--saffron);font-weight:600;text-align:center;line-height:1.25}
+.lbl.m{color:var(--mute);font-weight:500}
+svg{position:absolute;left:0;top:0;pointer-events:none}
+</style></head><body>
+
+<!-- LANE 1: direct chat -->
+<div class="lane" style="top:24px;height:360px">
+  <h2>Direct chat <span>/ quick question, Mac awake, Muse open</span></h2>
+  <div class="node" style="left:40px;top:92px;width:290px;height:128px"><b>Claude Code</b><i>sends one line starting with [Claude Code]</i></div>
+  <div class="node" style="left:460px;top:92px;width:290px;height:128px"><b>bot-bridge MCP</b><i>MCP server with 7 muse_* tools, runs locally</i></div>
+  <div class="node" style="left:880px;top:92px;width:290px;height:128px"><b>muse-ax</b><i>local helper, macOS Accessibility API, no clipboard</i></div>
+  <div class="node hot" style="left:1300px;top:92px;width:180px;height:128px"><b>Muse app</b><i>desktop, chat open</i></div>
+
+  <svg width="1520" height="360" viewBox="0 0 1520 360">
+    <defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#F4A300"/></marker>
+    <marker id="g" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#B9BEDC"/></marker></defs>
+    <g stroke="#F4A300" stroke-width="3" fill="none" marker-end="url(#a)">
+      <line x1="334" y1="156" x2="454" y2="156"/><line x1="754" y1="156" x2="874" y2="156"/><line x1="1174" y1="156" x2="1294" y2="156"/>
+    </g>
+    <path d="M1390 228 V 292 H 185 V 228" stroke="#B9BEDC" stroke-width="3" stroke-dasharray="9 7" fill="none" marker-end="url(#g)"/>
+  </svg>
+  <div class="lbl" style="left:334px;top:112px;width:120px">MCP</div>
+  <div class="lbl" style="left:754px;top:112px;width:120px">runs</div>
+  <div class="lbl" style="left:1174px;top:112px;width:120px">types, sends</div>
+  <div class="lbl m" style="left:420px;top:300px;width:700px;font-size:17px">reply read back: muse_wait_reply, muse_read, send checked on arrival</div>
+</div>
+
+<!-- LANE 2: away mode -->
+<div class="lane" style="top:408px;height:368px">
+  <h2>Away mode <span>/ real task, you are away, Mac may be closed</span></h2>
+  <div class="node" style="left:40px;top:92px;width:270px;height:128px"><b>Claude Code</b><i>task_create with brief, deliverable, acceptance criteria</i></div>
+  <div class="node hot" style="left:480px;top:78px;width:520px;height:156px"><b>Task board (you host it)</b><i>Cloudflare Workers + D1, Docker or Node, or your own Mac<br>Open, Claimed, Blocked, Done. Task text encrypted at rest.</i></div>
+  <div class="node" style="left:1260px;top:92px;width:220px;height:128px"><b>Muse</b><i>custom connector, runs on a schedule</i></div>
+  <div class="node" style="left:480px;top:266px;width:520px;height:70px;padding:12px 18px"><b style="font-size:21px">Web board view: /board</b><i style="margin-top:3px">read-only, live updates, viewer key</i></div>
+
+  <svg width="1520" height="368" viewBox="0 0 1520 368">
+    <defs><marker id="a2" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#F4A300"/></marker>
+    <marker id="g2" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#B9BEDC"/></marker></defs>
+    <line x1="314" y1="140" x2="474" y2="140" stroke="#F4A300" stroke-width="3" marker-end="url(#a2)"/>
+    <line x1="1254" y1="140" x2="1006" y2="140" stroke="#F4A300" stroke-width="3" marker-end="url(#a2)"/>
+        <path d="M474 190 H 314" stroke="#B9BEDC" stroke-width="3" stroke-dasharray="9 7" marker-end="url(#g2)"/>
+    <line x1="740" y1="238" x2="740" y2="260" stroke="#B9BEDC" stroke-width="3" marker-end="url(#g2)"/>
+  </svg>
+  <div class="lbl" style="left:314px;top:100px;width:160px">owner key</div>
+  <div class="lbl" style="left:1006px;top:68px;width:248px">claim, progress, submit_result<br>worker key only</div>
+  <div class="lbl m" style="left:314px;top:204px;width:160px">task_results</div>
+  <div class="lbl m" style="left:1190px;top:236px;width:290px;font-size:16px">checks about every 15 min;<br>5 min is the practical minimum</div>
+</div>
+</body></html>

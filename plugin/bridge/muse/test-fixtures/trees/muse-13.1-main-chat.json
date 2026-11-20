@@ -1,0 +1,210 @@
+{
+  "format": "cbb-ax-tree/1",
+  "muse_version": "13.1",
+  "redacted": true,
+  "source": "Built by hand from the real Muse 13.1 strings in the unit tests (the 'Chats ... Open chat and side chats' button, composer 'Message Attach file Dictate a message Send') and the real window and composer frames of the 13.1 click-target test; messages are dropped as `muse-ax doctor --dump-tree` writes them. Replace with a real doctor capture when one exists.",
+  "tree": {
+    "role": "AXApplication",
+    "frame": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+    },
+    "children": [
+      {
+        "role": "AXWindow",
+        "frame": {
+          "x": 533,
+          "y": 26,
+          "w": 614,
+          "h": 658
+        },
+        "children": [
+          {
+            "role": "AXWebArea",
+            "frame": {
+              "x": 533,
+              "y": 56,
+              "w": 614,
+              "h": 628
+            },
+            "children": [
+              {
+                "role": "AXButton",
+                "frame": {
+                  "x": 545,
+                  "y": 70,
+                  "w": 200,
+                  "h": 30
+                },
+                "children": [],
+                "title": "Chats Open chat and side chats"
+              },
+              {
+                "role": "AXGroup",
+                "frame": {
+                  "x": 545,
+                  "y": 110,
+                  "w": 590,
+                  "h": 440
+                },
+                "children": [
+                  {
+                    "role": "AXGroup",
+                    "frame": {
+                      "x": 0,
+                      "y": 0,
+                      "w": 0,
+                      "h": 0
+                    },
+                    "children": [
+                      {
+                        "role": "AXStaticText",
+                        "frame": {
+                          "x": 0,
+                          "y": 0,
+                          "w": 0,
+                          "h": 0
+                        },
+                        "children": [],
+                        "title": "<message>"
+                      }
+                    ]
+                  },
+                  {
+                    "role": "AXGroup",
+                    "frame": {
+                      "x": 0,
+                      "y": 0,
+                      "w": 0,
+                      "h": 0
+                    },
+                    "children": [
+                      {
+                        "role": "AXStaticText",
+                        "frame": {
+                          "x": 0,
+                          "y": 0,
+                          "w": 0,
+                          "h": 0
+                        },
+                        "children": [],
+                        "title": "<message>"
+                      }
+                    ]
+                  },
+                  {
+                    "role": "AXGroup",
+                    "frame": {
+                      "x": 0,
+                      "y": 0,
+                      "w": 0,
+                      "h": 0
+                    },
+                    "children": [
+                      {
+                        "role": "AXStaticText",
+                        "frame": {
+                          "x": 0,
+                          "y": 0,
+                          "w": 0,
+                          "h": 0
+                        },
+                        "children": [],
+                        "title": "<message>"
+                      }
+                    ]
+                  },
+                  {
+                    "role": "AXGroup",
+                    "frame": {
+                      "x": 0,
+                      "y": 0,
+                      "w": 0,
+                      "h": 0
+                    },
+                    "children": [
+                      {
+                        "role": "AXStaticText",
+                        "frame": {
+                          "x": 0,
+                          "y": 0,
+                          "w": 0,
+                          "h": 0
+                        },
+                        "children": [],
+                        "title": "<message>"
+                      }
+                    ]
+                  },
+                  {
+                    "role": "AXGroup",
+                    "frame": {
+                      "x": 0,
+                      "y": 0,
+                      "w": 0,
+                      "h": 0
+                    },
+                    "children": [
+                      {
+                        "role": "AXStaticText",
+                        "frame": {
+                          "x": 0,
+                          "y": 0,
+                          "w": 0,
+                          "h": 0
+                        },
+                        "children": [],
+                        "title": "<message>"
+                      }
+                    ]
+                  }
+                ],
+                "title": "Chat messages"
+              },
+              {
+                "role": "AXButton",
+                "frame": {
+                  "x": 545,
+                  "y": 560,
+                  "w": 590,
+                  "h": 58
+                },
+                "children": [],
+                "title": "Message Attach file Dictate a message Send"
+              }
+            ],
+            "title": ""
+          }
+        ],
+        "title": "h:0c8e55f1"
+      }
+    ],
+    "title": "h:0c8e55f1"
+  },
+  "expect": {
+    "selected": {
+      "kind": "matched",
+      "profile": "muse-13.1"
+    },
+    "future_version": {
+      "kind": "probe",
+      "profile": "muse-13.1"
+    },
+    "chats": [
+      "Main chat"
+    ],
+    "current_chat": "Main chat",
+    "profiles": {
+      "muse-12.1": {
+        "layout": "chat_switcher",
+        "missing": []
+      },
+      "muse-13.1": {
+        "layout": "chat_switcher",
+        "missing": []
+      }
+    }
+  }
+}

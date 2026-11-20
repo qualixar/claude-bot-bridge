@@ -1,0 +1,296 @@
+{
+  "schema": 1,
+  "bot": "muse",
+  "revision": 2,
+  "key_id": "rules-1",
+  "profiles": [
+    {
+      "id": "muse-12.1",
+      "match": {
+        "versions": [
+          "12.1"
+        ]
+      },
+      "elements": {
+        "web_area": {
+          "role": "AXWebArea"
+        },
+        "sidebar": {
+          "role": "AXGroup",
+          "title": {
+            "equals": "Side chats"
+          },
+          "childRole": "AXTextField"
+        },
+        "switcher": {
+          "role": "AXButton",
+          "title": {
+            "prefix": "Chats ",
+            "suffix": "Open chat and side chats"
+          }
+        },
+        "chat_button": {
+          "role": "AXButton",
+          "title": {
+            "nonEmpty": true,
+            "notIn": [
+              "New side chat",
+              "Side chats",
+              "Channels",
+              "Search"
+            ]
+          }
+        },
+        "main_chat_button": {
+          "role": "AXButton",
+          "title": {
+            "equals": "Main chat"
+          }
+        },
+        "new_side_chat_button": {
+          "role": "AXButton",
+          "title": {
+            "equals": "New side chat"
+          }
+        },
+        "chat_messages_group": {
+          "role": "AXGroup",
+          "title": {
+            "equals": "Chat messages"
+          }
+        },
+        "composer": {
+          "role": "AXButton",
+          "title": {
+            "prefix": "Message",
+            "contains": " Attach"
+          }
+        },
+        "sheet": {
+          "role": "AXSheet"
+        },
+        "sheet_cancel": {
+          "role": "AXButton",
+          "title": {
+            "equals": "Cancel"
+          }
+        },
+        "static_text": {
+          "role": "AXStaticText"
+        }
+      },
+      "layout": {
+        "detect": [
+          {
+            "layout": "sidebar",
+            "element": "sidebar"
+          },
+          {
+            "layout": "chat_switcher",
+            "element": "switcher"
+          }
+        ],
+        "extraAnchors": {
+          "sidebar": [
+            "main_chat_button",
+            "new_side_chat_button"
+          ],
+          "chat_switcher": []
+        }
+      },
+      "anchors": {
+        "required": [
+          "web_area",
+          "chat_messages_group",
+          "composer"
+        ],
+        "absent": {
+          "no_sheet_open": "sheet"
+        }
+      },
+      "composer": {
+        "idleSuffix": "Send",
+        "named": {
+          "prefix": "Message in ",
+          "terminator": " Attach"
+        },
+        "unnamedTitle": {
+          "prefix": "Message",
+          "contains": " Attach"
+        },
+        "mainChatName": "Main chat"
+      },
+      "messages": {
+        "userPrefixes": [],
+        "userMarkers": [
+          "You:"
+        ],
+        "assistantPrefixes": [],
+        "timePattern": "^((\\d{1,2} [A-Za-z]{3,9}|Today|Yesterday) at )?\\d{1,2}:\\d{2}(\\s?[AaPp][Mm])?$"
+      },
+      "labels": [
+        "Main chat",
+        "Side chats",
+        "New side chat",
+        "Channels",
+        "Search",
+        "Chat messages",
+        "Cancel",
+        "Message",
+        "Attach file",
+        "Attach files",
+        "Dictate a message",
+        "Send",
+        "Stop"
+      ]
+    },
+    {
+      "id": "muse-13.1",
+      "match": {
+        "versions": [
+          ">=13.1 <13.2"
+        ]
+      },
+      "elements": {
+        "web_area": {
+          "role": "AXWebArea"
+        },
+        "sidebar": {
+          "role": "AXGroup",
+          "title": {
+            "equals": "Side chats"
+          },
+          "childRole": "AXTextField"
+        },
+        "switcher": {
+          "role": "AXButton",
+          "title": {
+            "prefix": "Chats ",
+            "suffix": "Open chat and side chats"
+          }
+        },
+        "chat_button": {
+          "role": "AXButton",
+          "title": {
+            "nonEmpty": true,
+            "notIn": [
+              "New side chat",
+              "Side chats",
+              "Channels",
+              "Search"
+            ]
+          }
+        },
+        "main_chat_button": {
+          "role": "AXButton",
+          "title": {
+            "equals": "Main chat"
+          }
+        },
+        "new_side_chat_button": {
+          "role": "AXButton",
+          "title": {
+            "equals": "New side chat"
+          }
+        },
+        "chat_messages_group": {
+          "role": "AXGroup",
+          "title": {
+            "equals": "Chat messages"
+          }
+        },
+        "composer": {
+          "role": "AXButton",
+          "title": {
+            "prefix": "Message",
+            "contains": " Attach"
+          }
+        },
+        "sheet": {
+          "role": "AXSheet"
+        },
+        "sheet_cancel": {
+          "role": "AXButton",
+          "title": {
+            "equals": "Cancel"
+          }
+        },
+        "static_text": {
+          "role": "AXStaticText"
+        }
+      },
+      "layout": {
+        "detect": [
+          {
+            "layout": "sidebar",
+            "element": "sidebar"
+          },
+          {
+            "layout": "chat_switcher",
+            "element": "switcher"
+          }
+        ],
+        "extraAnchors": {
+          "sidebar": [
+            "main_chat_button",
+            "new_side_chat_button"
+          ],
+          "chat_switcher": []
+        }
+      },
+      "anchors": {
+        "required": [
+          "web_area",
+          "chat_messages_group",
+          "composer"
+        ],
+        "absent": {
+          "no_sheet_open": "sheet"
+        }
+      },
+      "composer": {
+        "idleSuffix": "Send",
+        "named": {
+          "prefix": "Message in ",
+          "terminator": " Attach"
+        },
+        "unnamedTitle": {
+          "prefix": "Message",
+          "contains": " Attach"
+        },
+        "mainChatName": "Main chat"
+      },
+      "messages": {
+        "userPrefixes": [
+          "User message: "
+        ],
+        "userMarkers": [
+          "You:"
+        ],
+        "assistantPrefixes": [
+          "Assistant message: "
+        ],
+        "timePattern": "^((\\d{1,2} [A-Za-z]{3,9}|Today|Yesterday) at )?\\d{1,2}:\\d{2}(\\s?[AaPp][Mm])?$"
+      },
+      "labels": [
+        "Main chat",
+        "Side chats",
+        "New side chat",
+        "Channels",
+        "Search",
+        "Chat messages",
+        "Cancel",
+        "Message",
+        "Attach file",
+        "Attach files",
+        "Dictate a message",
+        "Send",
+        "Stop",
+        "Chats Unread chats Open chat and side chats",
+        "Chats Open chat and side chats",
+        "Unread chats",
+        "Open chat and side chats"
+      ]
+    }
+  ]
+}

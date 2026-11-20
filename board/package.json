@@ -1,0 +1,38 @@
+{
+  "name": "qualixar-task-board",
+  "version": "0.2.0",
+  "license": "AGPL-3.0-or-later",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --local",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage",
+    "build:node": "node scripts/build-node.mjs",
+    "start": "node dist/node/server.js",
+    "rotate": "node dist/node/rotate.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-plugin": "^1.8.5",
+    "@cloudflare/workers-types": "^5.20261119.1",
+    "@vitest/coverage-istanbul": "^4.1.12",
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.12",
+    "wrangler": "^4.165.0"
+  },
+  "bin": {
+    "board": "client/board.mjs",
+    "cbb-board": "client/board.mjs",
+    "cbb-board-init": "client/init.mjs"
+  },
+  "description": "Claude Bot Bridge Board: task-board MCP server (Cloudflare Workers + D1, or Node/Docker + SQLite) with a read-only web board.",
+  "engines": {
+    "node": ">=22.13"
+  }
+}

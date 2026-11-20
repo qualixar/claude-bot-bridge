@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Template: install.sh --with-canary replaces __CBB_HOME__ with the bridge folder (default ~/.claude-bot-bridge) and
+     installs it to ~/Library/LaunchAgents. launchd does not expand ~ or $HOME itself. -->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.qualixar.cbb.canary</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>__CBB_HOME__/bin/muse-ax</string>
+    <string>canary</string>
+  </array>
+  <key>StartInterval</key>
+  <integer>3600</integer>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>ProcessType</key>
+  <string>Background</string>
+  <key>StandardOutPath</key>
+  <string>__CBB_HOME__/logs/canary.log</string>
+  <key>StandardErrorPath</key>
+  <string>__CBB_HOME__/logs/canary.err.log</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/usr/bin:/bin</string>
+    <key>CBB_HOME</key>
+    <string>__CBB_HOME__</string>
+  </dict>
+</dict>
+</plist>

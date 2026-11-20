@@ -1,0 +1,135 @@
+name: ci
+
+# Every push and pull request: the board (typecheck + tests), the MCP server (tests + the committed bundle is current),
+# the Swift helper (tests on macOS, plus a named replay of every recorded Muse accessibility tree against every profile in
+# rules/muse.json), the signatures of the key hierarchy (keyset by the root key, rules by the rules key) and the verified-version badge.
+# Every action is pinned by full commit SHA (the tag it was resolved from is in the comment); the checkout and artifact SHAs
+# are the same ones release.yml uses. To move one: `gh api repos/<owner>/<repo>/commits/<tag> --jq .sha`.
+#
+# `claude plugin validate` is NOT run here: it needs the whole Claude Code CLI, which is a heavy install for a manifest check.
+# Run it by hand before a release (see .github/RELEASING.md): claude plugin validate ./plugin, ./plugin/optional/board and the repo root.
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  board:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: board
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: board/package-lock.json
+      # npm 10 can crash resolving vitest peers without the flag (see board/README.md).
+      - run: npm ci --legacy-peer-deps
+      - run: npm run typecheck
+      - run: npm test
+
+  mcp:
+    # macOS, pinned like the swift job: the installer tests run the real `codesign`. (The tests also stub it where it cannot run,
+    # see test/helpers.js, so they pass on any platform; the runner stays macOS because that is where the installer runs.)
+    runs-on: macos-15
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: plugin/bridge/muse/mcp
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: plugin/bridge/muse/mcp/package-lock.json
+      - run: npm ci
+      # Includes test/bundle.test.js: dist/index.mjs is what ships in the plugin and must match src/.
+      - run: npx vitest run
+      - name: The committed bundle is what a fresh build produces
+        run: |
+          npm run build
+          git diff --exit-code -- dist
+
+  swift:
+    runs-on: macos-15
+    timeout-minutes: 30
+    env:
+      # The replay and the file-consistency tests need rules/, keys/ and the fixtures: missing means failure here, not a skip.
+      CBB_REQUIRE_REPO_FILES: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Swift tests
+        run: |
+          set -eu
+          # test.sh adds the Command Line Tools' Swift Testing paths; a runner without them uses the Xcode toolchain directly.
+          if [ -d /Library/Developer/CommandLineTools/Library/Developer/Frameworks ]; then
+            bash plugin/bridge/muse/test.sh
+          else
+            swift test --package-path plugin/bridge/muse
+          fi
+      # Any change to rules/muse.json is checked against every recorded tree in plugin/bridge/muse/test-fixtures/trees/. The full
+      # suite above already includes these tests; this named step makes a rules regression show up under its own name.
+      - name: Replay recorded Muse accessibility trees against every rules profile
+        run: |
+          set -eu
+          if [ -d /Library/Developer/CommandLineTools/Library/Developer/Frameworks ]; then
+            bash plugin/bridge/muse/test.sh --filter TreeReplayTests
+          else
+            swift test --package-path plugin/bridge/muse --filter TreeReplayTests
+          fi
+
+  trust-material:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: The root public key is the same everywhere it is published
+        run: |
+          set -eu
+          cmp keys/root-public.pem plugin/release-signing-public.pem
+      # keys/UNSIGNED (and rules/UNSIGNED) mark material that is waiting for its offline signature. CI warns about them; the release
+      # workflow refuses to run while they exist.
+      - name: keys/keyset.json is signed by the root key
+        run: |
+          set -eu
+          openssl version | grep -q '^OpenSSL 3' || { echo "OpenSSL 3 is required for Ed25519 -rawin"; exit 1; }
+          if [ -f keys/UNSIGNED ]; then echo "::warning::keys/keyset.json is still UNSIGNED"; exit 0; fi
+          sh plugin/scripts/verify-keyset.sh keys/keyset.json keys/root-public.pem
+      - name: rules/index.json and rules/muse.json are signed by the rules key named in their key_id
+        run: |
+          set -eu
+          if [ -f rules/UNSIGNED ] || [ -f keys/UNSIGNED ]; then echo "::warning::the rules are still UNSIGNED"; exit 0; fi
+          for f in rules/index.json rules/muse.json; do sh plugin/scripts/verify-rules.sh "$f"; done
+
+  badge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+      # docs/badges/muse-verified.json is what the README badge reads: it must list the Muse versions rules/muse.json lists.
+      - name: The verified-version badge is current
+        run: node plugin/scripts/badge.mjs --check
