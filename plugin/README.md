@@ -44,10 +44,10 @@ The MCP server looks for `muse-ax` in this order: the `CBB_MUSE_AX` environment 
 The board is a remote MCP server you deploy yourself (the `board/` folder of this repository). Its connection lives in a separate plugin, so people without a board do not get a failing server in `/mcp`:
 
 ```bash
-export CBB_BOARD_URL="https://<your-worker>.workers.dev/mcp"
-export CBB_BOARD_OWNER_KEY="<owner key>"
 claude plugin install bot-bridge-board@claude-bot-bridge
 ```
+
+Claude Code then asks for two settings: the board URL (ending in `/mcp`) and the owner key. The owner key is marked sensitive, so it is stored in your system's secure credential store (the macOS keychain), never in `settings.json` and never in an environment variable. Change them later with `claude plugin configure bot-bridge-board@claude-bot-bridge`.
 
 ## How updates work
 

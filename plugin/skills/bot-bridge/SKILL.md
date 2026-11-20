@@ -18,9 +18,9 @@ Two paths exist. Pick by whether the answer is needed now and whether the Mac is
 
 Use this for anything that takes more than a short exchange or must run while the Mac is closed.
 
-1. `task_create` (board tool) with a clear title, brief, deliverable and acceptance criteria. The board tools come from the optional `bot-bridge-board` plugin and need the user's `CBB_BOARD_URL` and `CBB_BOARD_OWNER_KEY`. If those tools are not available, say so and offer direct chat instead.
+1. `task_create` (board tool) with a clear title, brief, deliverable and acceptance criteria. The board tools come from the optional `bot-bridge-board` plugin, configured with the board URL and owner key when it was installed. If those tools are not available, say so and offer direct chat instead.
 2. Optional doorbell: one short `muse_send` such as `[Claude Code] A task is waiting on the board.` Muse picks the task up from the board itself. Skip the doorbell if the Mac is closed; Muse polls on its own schedule.
-3. Poll with `task_list` and `task_results` (or `task_get` for the event log). If a task is `needs_owner`, answer with `task_answer` after asking the user. `task_cancel` stops a task; `board_pause` is the kill switch.
+3. Wait with `task_wait` (pass the task id; it returns as soon as the task changes, up to 50 s per call, so call it again while the task is still open) and read the outcome with `task_results` (or `task_get` for the event log). If a task is `needs_owner`, answer with `task_answer` after asking the user. `task_cancel` stops a task; `board_pause` is the kill switch.
 
 ## Rules that do not bend
 
