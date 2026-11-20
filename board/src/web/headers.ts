@@ -9,7 +9,7 @@ export function securityHeaders(https: boolean, kind: BodyKind, extra: Record<st
   const h = new Headers({
     "content-security-policy": CSP,
     "x-content-type-options": "nosniff",
-    "referrer-policy": "no-referrer",
+    "referrer-policy": "same-origin",
     "cache-control": kind === "asset" ? "no-cache" : "no-store",
     ...extra,
   });
