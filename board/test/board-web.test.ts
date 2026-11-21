@@ -245,7 +245,8 @@ describe("security headers", () => {
       const res = await get(app, path, headers);
       expect(res.headers.get("content-security-policy"), path).toBe(CSP);
       expect(res.headers.get("x-content-type-options"), path).toBe("nosniff");
-      expect(res.headers.get("referrer-policy"), path).toBe("no-referrer");
+      // Not no-referrer: under that policy browsers send Origin: null on a form POST, and the login's origin check refuses it.
+      expect(res.headers.get("referrer-policy"), path).toBe("same-origin");
       expect(res.headers.get("strict-transport-security"), path).toContain("max-age=");
       if (!path.includes("assets")) expect(res.headers.get("cache-control"), path).toBe("no-store");
     }
