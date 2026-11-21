@@ -17,6 +17,7 @@
 </p>
 
 <p align="center">
+  <a href="#why-claude-code-is-in-charge">Why</a> ·
   <a href="#quick-start-claude-code-plugin-for-muse">Quick start</a> ·
   <a href="#hand-tasks-from-claude-code-to-muse">Direct chat</a> ·
   <a href="#self-hosted-task-board-for-ai-agents">Task board</a> ·
@@ -29,6 +30,15 @@
 <p align="center">⭐ <b>Free and AGPL-3.0. If Claude Bot Bridge hands a task to Muse for you, <a href="https://github.com/qualixar/claude-bot-bridge/stargazers">star the repo</a>.</b> It is the only signal I get that it worked for you, and it is how other Claude Code users find it.</p>
 
 Claude Bot Bridge lets Claude Code hand work to a consumer AI bot you already pay for. Version 1 supports one bot, Meta's Muse desktop app on macOS (verified on Muse 12.1 and 13.1), and more bots are planned. There are two routes. For a quick question, Claude types into the open Muse chat and reads the reply. For a real job, Claude puts a task on a small board that you host, and Muse picks it up on a schedule, so the work continues while you are away.
+
+<p align="center">
+  <img src="assets/demo-direct-chat.gif" alt="A real run of the direct-chat route: Claude Code asks Muse for the weather in London and direct flights from Delhi, the bridge types the question into the Muse desktop app, Muse answers in its own chat, and the answer comes back to Claude Code." width="100%">
+</p>
+<p align="center"><sub>A real run, played at 1.5×: Claude Code sends the question, the bridge types it into Muse, and Muse's answer comes back to Claude Code.</sub></p>
+
+## Why Claude Code is in charge
+
+Most setups that connect a chat bot to Claude Code let the bot give the orders: you chat with the bot, and the bot hands the real work to Claude Code. Claude Bot Bridge does the reverse. Claude Code already holds your repository, your plan and your context, so it stays in charge and hands the bot the jobs a consumer bot does well, such as live web answers and longer tasks that run while you are away from the desk. Claude Code asks; your bots do the work.
 
 ## Quick start: Claude Code plugin for Muse
 
