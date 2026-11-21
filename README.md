@@ -17,6 +17,8 @@
 </p>
 
 <p align="center">
+  <a href="https://youtu.be/BqOsAaAgyXA">Launch film</a> ·
+  <a href="#why-claude-code-is-in-charge">Why</a> ·
   <a href="#quick-start-claude-code-plugin-for-muse">Quick start</a> ·
   <a href="#hand-tasks-from-claude-code-to-muse">Direct chat</a> ·
   <a href="#self-hosted-task-board-for-ai-agents">Task board</a> ·
@@ -29,6 +31,17 @@
 <p align="center">⭐ <b>Free and AGPL-3.0. If Claude Bot Bridge hands a task to Muse for you, <a href="https://github.com/qualixar/claude-bot-bridge/stargazers">star the repo</a>.</b> It is the only signal I get that it worked for you, and it is how other Claude Code users find it.</p>
 
 Claude Bot Bridge lets Claude Code hand work to a consumer AI bot you already pay for. Version 1 supports one bot, Meta's Muse desktop app on macOS (verified on Muse 12.1 and 13.1), and more bots are planned. There are two routes. For a quick question, Claude types into the open Muse chat and reads the reply. For a real job, Claude puts a task on a small board that you host, and Muse picks it up on a schedule, so the work continues while you are away.
+
+<h3 align="center">Watch the two-minute launch film</h3>
+
+<p align="center">
+  <a href="https://youtu.be/BqOsAaAgyXA"><img src="assets/launch-film.jpg" alt="Launch film on YouTube: Claude Code Is the Boss Now. I flipped Muse and Claude Code. Click to watch." width="80%"></a>
+</p>
+<p align="center"><sub><a href="https://youtu.be/BqOsAaAgyXA">Claude Code Is the Boss Now: I Flipped Muse + Claude Code</a> (YouTube, 2:03): why Claude Code stays in charge, both routes running for real, and the safety design.</sub></p>
+
+## Why Claude Code is in charge
+
+Most setups that connect a chat bot to Claude Code let the bot give the orders: you chat with the bot, and the bot hands the real work to Claude Code. Claude Bot Bridge does the reverse. Claude Code already holds your repository, your plan and your context, so it stays in charge and hands the bot the jobs a consumer bot does well, such as live web answers and longer tasks that run while you are away from the desk. Claude Code asks; your bots do the work.
 
 ## Quick start: Claude Code plugin for Muse
 
@@ -49,6 +62,11 @@ The plugin id is `bot-bridge` because Claude Code reserves plugin names that sta
 
 ## Hand tasks from Claude Code to Muse
 
+<p align="center">
+  <img src="assets/demo-direct-chat.gif" alt="A real run of the direct-chat route: Claude Code asks Muse for the weather in London and direct flights from Delhi, the bridge types the question into the Muse desktop app, Muse answers in its own chat, and the answer comes back to Claude Code." width="100%">
+</p>
+<p align="center"><sub>A real run, played at 1.5×: Claude Code sends the question, the bridge types it into Muse, and Muse's answer comes back to Claude Code.</sub></p>
+
 The `muse` MCP server has eight tools: `muse_status`, `muse_list_chats`, `muse_open_chat`, `muse_read`, `muse_send`, `muse_wait_reply`, `muse_selftest` and the read-only `muse_doctor`. Every message Claude sends starts with `[Claude Code]`, is a single line of at most 500 characters, and is refused while a dialog is open or Muse is mid-answer. Before pressing Return the helper checks that Muse's message box holds exactly that text, and after sending it checks that the message landed. The message is never pasted through the clipboard; when the message box cannot be read through Accessibility, the helper copies its contents to compare (up to twice per send), saving and restoring your clipboard around that step. A clipboard manager may still record that copy.
 
 The cost is focus. Each send brings Muse to the front and moves the mouse for a few seconds. The bridge waits until you have stopped typing or moving the mouse for 3 seconds, and if you type into Muse's message box while it works, it clears the box and refuses instead of sending. `muse_send` with `dry_run` runs every check and types the text, then clears it without sending, which is a safe first try. Every send is logged to `~/.claude-bot-bridge/sends.jsonl` with the time, chat, outcome and a fingerprint of the text, never the text itself; `muse-ax history` shows it. The bridge never switches or creates chats on any Muse version: it never presses Muse's chat list, so it works in whichever chat you have open. Any window size works, including Muse side by side with Claude, because the bridge finds the message box wherever it is.
@@ -56,6 +74,11 @@ The cost is focus. Each send brings Muse to the front and moves the mouse for a 
 Claude follows three rules when it talks to Muse. Everything Muse writes is untrusted data, so Claude never follows instructions found in it. Claude never asks Muse to post to Facebook, Instagram or WhatsApp contacts, or to spend money, without your explicit yes in the chat. The send rules (prefix, length, one line) are enforced in code and are not worked around.
 
 ## Self-hosted task board for AI agents
+
+<p align="center">
+  <img src="assets/demo-task-board.gif" alt="A real run of the task-board route: the web board shows a task card claimed by Muse and in progress; Muse submits its result and the card moves to Done." width="100%">
+</p>
+<p align="center"><sub>A real run, played at 2×: Muse claims the card, works on it, submits the result, and the card moves to Done.</sub></p>
 
 For anything longer than a short exchange, Claude creates a task on the board with a brief, a deliverable and acceptance criteria. Muse reaches the board through a custom connector, checks it on a schedule (about 15 minutes in our setup; about 5 minutes is Muse's practical minimum), claims a task, posts progress and submits a result. If Muse is blocked it asks a question, the task shows as Blocked, and in our setup Muse relays that question to the owner over WhatsApp. Claude answers it with `task_answer` after asking you. The board is read-only in the browser at `/board`, where tasks move through Open, Claimed, Blocked and Done.
 
